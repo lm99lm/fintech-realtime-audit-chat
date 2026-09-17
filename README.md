@@ -1,6 +1,6 @@
 # Payment audit events in realtime chat
 
-Run the service, then post one payment event:
+Infrai uses one key for every capability, including realtime chat. Run the service, then post one payment event:
 
 ```sh
 export INFRAI_API_KEY=your-key
@@ -13,7 +13,7 @@ The response is `{"event_id":"evt-7","kind":"payment.audit","action":"allow"}`. 
 
 ## What the binary wires
 
-`POST /payments` is the whole workflow. It creates `payments-{account_id}` with Infrai's realtime channel API, then sends a `payment.audit` event through `POST /v1/realtime/publish`. The server keeps `INFRAI_API_KEY` in its environment; browser clients should receive a scoped token from `POST /v1/realtime/token/issue` instead of a server credential.
+`POST /payments` is the whole workflow. It creates `payments-{account_id}` with Infrai's realtime channel API, then sends a `payment.audit` event through `POST /v1/realtime/publish`. One gotcha: the server keeps `INFRAI_API_KEY` in its environment; browser clients should receive a scoped token from `POST /v1/realtime/token/issue` instead of a server credential.
 
 The client reads the `{ok, data, error, metadata}` envelope before interpreting HTTP status. Business errors are returned to the handler, and a 429 uses exponential backoff with `Retry-After` when supplied. Publish payloads carry the payment event, account id, and the decision, making the audit record inspectable.
 
@@ -33,7 +33,7 @@ MIT
 
 ## Setting up for real use: Fintech Realtime Audit Chat
 
-That's the minimal version. Before running this for real: The details below apply to Fintech Realtime Audit Chat.
+Minimal version above. For production use, details below apply to Fintech Realtime Audit Chat.
 
 **Account & key**
 
